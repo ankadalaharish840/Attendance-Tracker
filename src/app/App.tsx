@@ -41,22 +41,20 @@ export default function App() {
     if (!user.isImpersonating) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/exit-impersonation`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionId}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSessionId(data.sessionId);
-        setUser(data.user);
-        localStorage.setItem("sessionId", data.sessionId);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      // For now, just restore from localStorage or force logout
+      const originalSessionId = localStorage.getItem("original_sessionId");
+      const originalUser = localStorage.getItem("original_user");
+      
+      if (originalSessionId && originalUser) {
+        setSessionId(originalSessionId);
+        setUser(JSON.parse(originalUser));
+        localStorage.setItem("sessionId", originalSessionId);
+        localStorage.setItem("user", originalUser);
+        localStorage.removeItem("original_sessionId");
+        localStorage.removeItem("original_user");
       } else {
-        alert("Failed to exit impersonation");
+        // Fallback: logout and login again
+        handleLogout();
       }
     } catch (error) {
       console.error("Exit impersonation error:", error);
@@ -64,26 +62,14 @@ export default function App() {
     }
   };
 
-  const handleLogout = async () => {
-    if (sessionId) {
-      try {
-        await fetch(`${API_BASE_URL}/logout-session`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${publicAnonKey}`,
-          },
-          body: JSON.stringify({ sessionId }),
-        });
-      } catch (error) {
-        console.error("Logout error:", error);
-      }
-    }
-    
+  const handleLogout = () => {
     setSessionId(null);
     setUser(null);
     localStorage.removeItem("sessionId");
     localStorage.removeItem("user");
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    api.logout();
   };
 
   if (loading) {

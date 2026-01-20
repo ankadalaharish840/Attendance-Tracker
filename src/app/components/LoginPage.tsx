@@ -18,22 +18,19 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${publicAnonKey}`,
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await api.login(email, password);
 
-      const data = await response.json();
+      // Store in both auth_token/auth_user (API client) and sessionId/user (legacy)
+      const token = data.token || localStorage.getItem("auth_token");
+      const userData = data.user || api.getStoredUser();
 
-      if (!response.ok) {
-        throw new Error(data.error || "Login failed");
+      if (token && userData) {
+        localStorage.setItem("sessionId", token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        onLogin(token, userData);
+      } else {
+        throw new Error("Login failed - no token received");
       }
-
-      onLogin(data.sessionId, data.user);
     } catch (err: any) {
       setError(err.message || "An error occurred");
     } finally {

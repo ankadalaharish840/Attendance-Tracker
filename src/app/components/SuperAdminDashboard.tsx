@@ -8,8 +8,6 @@ import TimeTracker from "./TimeTracker";
 import SettingsPanel from "./SettingsPanel";
 import SuperAdminLiveDashboard from "./SuperAdminLiveDashboard";
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-9d5286ad`;
-
 interface SuperAdminDashboardProps {
   user: any;
   sessionId: string;
@@ -32,16 +30,12 @@ export default function SuperAdminDashboard({
 
   const loadPendingRequests = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/pending-requests`, {
-        headers: {
-          Authorization: `Bearer ${sessionId}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setPendingCount(data.timeRequests.length + data.leaveRequests.length);
-      }
+      // TODO: Implement backend endpoint /api/auth/pending-requests
+      // const data = await api.authenticatedFetch('/pending-requests');
+      // setPendingCount(data.timeRequests.length + data.leaveRequests.length);
+      
+      // Temporary: Set to 0 until backend endpoint is implemented
+      setPendingCount(0);
     } catch (error) {
       console.error("Error loading pending requests:", error);
     }
