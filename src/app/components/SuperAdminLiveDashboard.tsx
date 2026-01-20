@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, Clock, Coffee, TrendingUp, Calendar, Activity } from "lucide-react";
-import api from "../../utils/api";
+import api, { API_BASE_URL } from "../../utils/api";
 
 interface SuperAdminLiveDashboardProps {
   sessionId: string;

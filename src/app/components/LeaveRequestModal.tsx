@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Calendar } from "lucide-react";
-import api from "../../utils/api";
+import api, { API_BASE_URL } from "../../utils/api";
 
 interface LeaveRequestModalProps {
   sessionId: string;

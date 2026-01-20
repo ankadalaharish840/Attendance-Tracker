@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { LogIn, LogOut as LogOutIcon, Coffee, Activity, X } from "lucide-react";
-import api from "../../utils/api";
+import api, { API_BASE_URL } from "../../utils/api";
 
 interface TimeTrackerProps {
   sessionId: string;

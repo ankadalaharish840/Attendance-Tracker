@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plus, X, Clock, Edit2, Save } from "lucide-react";
-import api from "../../utils/api";
+import api, { API_BASE_URL } from "../../utils/api";
 
 interface SettingsPanelProps {
   sessionId: string;

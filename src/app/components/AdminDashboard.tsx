@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Calendar, LogOut, Bell, BarChart3 } from "lucide-react";
-import api from "../../utils/api";
+import api, { API_BASE_URL } from "../../utils/api";
 import AttendanceCalendar from "./AttendanceCalendar";
 import RequestsPanel from "./RequestsPanel";
 import AdminLiveDashboard from "./AdminLiveDashboard";

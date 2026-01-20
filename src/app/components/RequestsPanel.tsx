@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, X, Clock, Calendar } from "lucide-react";
-import api from "../../utils/api";
+import api, { API_BASE_URL } from "../../utils/api";
 
 interface RequestsPanelProps {
   sessionId: string;

@@ -1,5 +1,5 @@
 // API configuration with security enhancements
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Token storage keys
 const TOKEN_KEY = 'auth_token';
