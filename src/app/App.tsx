@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { ArrowLeft } from "lucide-react";
+import api from "../utils/api";
 import LoginPage from "./components/LoginPage";
 import SuperAdminDashboard from "./components/SuperAdminDashboard";
 import AdminDashboard from "./components/AdminDashboard";
 import AgentDashboard from "./components/AgentDashboard";
-
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-9d5286ad`;
 
 export default function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);

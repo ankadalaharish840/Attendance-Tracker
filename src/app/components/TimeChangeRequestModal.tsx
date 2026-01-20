@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { X } from "lucide-react";
-
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-9d5286ad`;
+import api from "../../utils/api";
 
 interface TimeChangeRequestModalProps {
   sessionId: string;

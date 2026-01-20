@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { LogIn, LogOut as LogOutIcon, Coffee, Activity, X } from "lucide-react";
-
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-9d5286ad`;
+import api from "../../utils/api";
 
 interface TimeTrackerProps {
   sessionId: string;

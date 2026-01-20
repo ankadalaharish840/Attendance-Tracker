@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { projectId, publicAnonKey } from "/utils/supabase/info";
+import api from "../../utils/api";
 import { Users, LogOut, UserPlus, Calendar, Bell, Key, Clock, Settings, BarChart3 } from "lucide-react";
 import UserManagement from "./UserManagement";
 import AttendanceCalendar from "./AttendanceCalendar";

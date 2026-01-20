@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { Calendar, LogOut, Bell, BarChart3 } from "lucide-react";
+import api from "../../utils/api";
 import AttendanceCalendar from "./AttendanceCalendar";
 import RequestsPanel from "./RequestsPanel";
 import AdminLiveDashboard from "./AdminLiveDashboard";
-
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-9d5286ad`;
 
 interface AdminDashboardProps {
   user: any;
