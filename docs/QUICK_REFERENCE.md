@@ -39,11 +39,12 @@
 - Sensitive data protection
 
 ### ✅ Database Ready
-- User schema with validation
-- Password hashing on save
-- Unique email constraint
-- Timestamps for audit trail
-- Soft delete capability
+- PostgreSQL on Supabase
+- 8 tables with proper relationships
+- UUID primary keys
+- Auto-updating timestamps
+- Default superadmin user
+- Error logging table
 
 ### ✅ Documentation Created
 - Security best practices document
@@ -63,9 +64,11 @@ cd Attendance_Tracker-backend
 # Install dependencies
 npm install
 
-# Create .env file with your MongoDB URI and JWT secret
+# Create .env file with your Supabase credentials
 cp .env.example .env
-# Edit .env with your values
+# Edit .env with your Supabase URL and keys
+
+# Set up database (run schema.sql in Supabase SQL Editor first!)
 
 # Start server
 npm start
@@ -103,10 +106,13 @@ bash test.sh
 ### Backend (.env)
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/db_name
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+SUPABASE_ANON_KEY=your_anon_key_here
 JWT_SECRET=your_min_32_character_strong_secret_key
 FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
+LOG_LEVEL=debug
 ```
 
 ### Frontend (.env.local)
@@ -123,8 +129,12 @@ VITE_API_URL=http://localhost:5000/api
 |------|---------|
 | `server.js` | Main server with security & error handling |
 | `routes/auth.js` | Login & registration endpoints |
-| `models/user.js` | User schema with hashing & validation |
+| `routes/attendance.js` | Attendance tracking & user management |
+| `config/supabase.js` | Supabase client configuration |
+| `utils/supabaseHelpers.js` | Database operation helpers |
 | `middleware/auth.js` | JWT & RBAC middleware |
+| `middleware/errorTracking.js` | Error logging middleware |
+| `schema.sql` | Database schema for Supabase |
 | `test.ps1` / `test.sh` | Automated test scripts |
 
 ### Frontend
@@ -157,17 +167,18 @@ VITE_API_URL=http://localhost:5000/api
 - ✅ Error messages don't expose sensitive info
 
 ### Database
-- ✅ Mongoose ORM prevents SQL injection
+- ✅ PostgreSQL on Supabase prevents SQL injection
+- ✅ Prepared statements and parameterized queries
 - ✅ Unique email constraint
 - ✅ Email format validation
-- ✅ Timestamp tracking
+- ✅ Timestamp tracking with triggers
 
 ---
 
 ## Testing Checklist
 
-- [ ] Backend starts without errors
-- [ ] MongoDB connection successful
+- [ ] Supabase connection successful
+- [ ] Database schema created (8 tables)
 - [ ] API health check returns 200
 - [ ] User registration works
 - [ ] User login works
@@ -176,19 +187,20 @@ VITE_API_URL=http://localhost:5000/api
 - [ ] Frontend connects to backend
 - [ ] Authentication flow works
 - [ ] Errors display properly
+- [ ] Error tracking logs to databaseks
+- [ ] Errors display properly
 
 ---
 
 ## Deployment Checklist
 
-### Before Deploying
-- [ ] Generate strong JWT_SECRET (min 32 chars)
-- [ ] Create MongoDB Atlas account
-- [ ] Set up database cluster
-- [ ] Create database user
-- [ ] Get connection string
+### Before DeSupabase account
+- [ ] Create new Supabase project
+- [ ] Run schema.sql in Supabase SQL Editor
+- [ ] Verify 8 tables created successfully
+- [ ] Get Supabase API credentials
 - [ ] Update .env with real values
-- [ ] Test with real MongoDB
+- [ ] Test connection locally
 
 ### Deploy Backend (Render)
 - [ ] Push to GitHub
@@ -240,24 +252,24 @@ npm audit fix
 
 ### Database
 ```bash
-# Connect to MongoDB locally
-mongo mongodb://localhost:27017/attendance_tracker_dev
-
-# Check collections
-show collections
+# Open Supabase SQL Editor (in browser)
+# Go to your Supabase project → SQL Editor
 
 # View users
-db.users.find()
+SELECT * FROM users;
+
+# View attendance records
+SELECT * FROM attendance ORDER BY created_at DESC LIMIT 10;
+
+# Check error logs
+SELECT * FROM error_logs ORDER BY created_at DESC LIMIT 20;
 ```
 
 ---
 
 ## Troubleshooting
-
-### Backend won't start
-```
-Error: MONGO_URI not set
-Solution: Ensure .env exists with MONGO_URI variable
+SUPABASE_URL not set
+Solution: Ensure .env exists with Supabase credentials
 ```
 
 ### Port already in use
@@ -278,17 +290,29 @@ Error: Connection refused
 Solution: Ensure backend is running on port 5000
 ```
 
+### Supabase Connection Error
+```
+Error: Failed to connect to Supabase
+Solution: Verify SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are correct
+```
+Error: Connection refused
+Solution: Ensure backend is running on port 5000
+```
+
 ---
 
 ## Next Steps
 
 1. **Test Locally**
+   - Create Supabase project
+   - Run schema.sql in SQL Editor
    - Follow "Quick Start" above
    - Run test scripts
    - Verify everything works
 
 2. **Prepare for Deployment**
-   - Create MongoDB Atlas cluster
+   - Create Supabase project
+   - Run schema.sql in SQL Editor
    - Generate JWT_SECRET
    - Set up environment variables
    - Review security settings

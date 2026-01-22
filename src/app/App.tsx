@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import api from "../utils/api";
+import ErrorBoundary from "./components/ErrorBoundary";
 import LoginPage from "./components/LoginPage";
 import SuperAdminDashboard from "./components/SuperAdminDashboard";
 import AdminDashboard from "./components/AdminDashboard";
@@ -85,9 +86,10 @@ export default function App() {
   }
 
   return (
-    <div className="size-full bg-slate-50">
-      {/* Impersonation Banner */}
-      {user.isImpersonating && (
+    <ErrorBoundary>
+      <div className="size-full bg-slate-50">
+        {/* Impersonation Banner */}
+        {user.isImpersonating && (
         <div className="bg-yellow-500 text-white px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold">
@@ -127,7 +129,7 @@ export default function App() {
             onLogout={handleLogout}
           />
         )}
-      </div>
+      ErrorBoundaryiv>
     </div>
   );
 }

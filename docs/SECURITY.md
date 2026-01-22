@@ -11,8 +11,8 @@ This document outlines the security enhancements made to the Attendance Tracker 
 - Prevents running with incomplete configuration
 
 ```javascript
-if (!process.env.MONGO_URI) {
-  console.error('ERROR: MONGO_URI environment variable is not set');
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('ERROR: Supabase environment variables are not set');
   process.exit(1);
 }
 ```
@@ -133,21 +133,27 @@ res.status(err.status || 500).json({
 });
 ```
 
-### 11. MongoDB Injection Prevention
-- Uses Mongoose ORM for parameterized queries
+### 11. SQL Injection Prevention
+- Uses Supabase client with parameterized queries
 - Input validation before database operations
 - No string concatenation in queries
+- PostgreSQL prepared statements
 
 ### 12. Data Model Security
-- Email validation in schema
+- Email validation at application and database level
 - Unique email constraint prevents duplicates
 - isActive field allows soft delete
-- Timestamps for audit trail
+- Timestamps with triggers for audit trail
+- UUID primary keys instead of sequential IDs
 
 ```javascript
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
+// Supabase query example
+const { data, error } = await supabase
+  .from('users')
+  .select('*')
+  .eq('email', email)  // Parameterized, safe from injection
+  .single();
+```
     required: true,
     unique: true,
     lowercase: true,
@@ -207,10 +213,13 @@ if (response.status === 401) {
 ### Backend (.env)
 ```
 PORT=5000
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/db_name
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+SUPABASE_ANON_KEY=your-anon-key-here
 JWT_SECRET=your-min-32-character-random-secret-key
 FRONTEND_URL=https://your-frontend.vercel.app
 NODE_ENV=production
+LOG_LEVEL=info
 ```
 
 **Never commit .env file! Add to .gitignore**
@@ -227,11 +236,11 @@ VITE_API_URL=https://your-backend.onrender.com/api
 - [ ] Set NODE_ENV=production
 - [ ] Configure correct FRONTEND_URL and VITE_API_URL
 - [ ] Enable HTTPS for both frontend and backend
-- [ ] Set up database backups
+- [ ] Set up database backups (Supabase has automatic backups)
 - [ ] Review and update all dependencies
-- [ ] Set up error tracking (Sentry, etc.)
+- [ ] Set up error tracking (built-in with error_logs table)
 - [ ] Configure rate limiting (next step)
-- [ ] Enable MongoDB authentication
+- [ ] Enable Supabase Row Level Security (RLS) policies
 - [ ] Use environment-specific secrets
 
 ### Ongoing Security
@@ -276,13 +285,13 @@ app.use(limiter);
 - Maintain compliance audit trail
 
 ### 6. Data Encryption (FOR FUTURE)
-- Encrypt sensitive fields in MongoDB
-- Use TLS/SSL for data in transit
+- Encrypt sensitive fields at rest
+- Use TLS/SSL for data in transit (Supabase provides this)
 - Implement field-level encryption for PII
 
 ## Common Vulnerabilities Protected Against
 
-1. **SQL Injection** ✓ - MongoDB prevents via Mongoose ORM
+1. **SQL Injection** ✓ - PostgreSQL with parameterized queries via Supabase
 2. **XSS (Cross-Site Scripting)** ✓ - React escapes by default
 3. **CSRF (Cross-Site Request Forgery)** ✓ - Token validation + CORS
 4. **Clickjacking** ✓ - X-Frame-Options via Helmet
@@ -315,4 +324,4 @@ app.use(limiter);
 - [Node.js Security Checklist](https://nodejs.org/en/docs/guides/nodejs-security/)
 - [Express.js Security Best Practices](https://expressjs.com/en/advanced/best-practice-security.html)
 - [JWT Best Practices](https://tools.ietf.org/html/rfc8949)
-- [MongoDB Security](https://docs.mongodb.com/manual/security/)
+- [Supabase Security](https://supabase.com/docs/guides/platform/security)

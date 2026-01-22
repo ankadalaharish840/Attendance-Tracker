@@ -3,33 +3,48 @@
 This guide will walk you through deploying the Attendance Tracker App with:
 - **Frontend** on Vercel
 - **Backend** on Render
-- **Database** on MongoDB Atlas
+- **Database** on Supabase (PostgreSQL)
 
 ## Prerequisites
 
 1. GitHub account
 2. Vercel account (sign up at vercel.com)
 3. Render account (sign up at render.com)
-4. MongoDB Atlas account (sign up at mongodb.com/atlas)
+4. Supabase account (sign up at supabase.com)
 
-## Step 1: Set Up MongoDB Database
+## Step 1: Set Up Supabase Database
 
-1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Create a new cluster (free tier is fine)
-3. Create a database user:
-   - Click "Database Access" → "Add New Database User"
-   - Choose password authentication
-   - Save username and password securely
-4. Whitelist IP addresses:
-   - Click "Network Access" → "Add IP Address"
-   - Select "Allow Access from Anywhere" (0.0.0.0/0) for development
-5. Get connection string:
-   - Click "Database" → "Connect" → "Connect your application"
-   - Copy the connection string
-   - Replace `<password>` with your database user password
-   - Replace `myFirstDatabase` with your database name (e.g., `attendance_tracker`)
+1. Go to [Supabase](https://supabase.com)
+2. Create a new project:
+   - Click "New Project"
+   - Choose your organization
+   - Enter project name (e.g., `attendance-tracker`)
+   - Enter a strong database password (save this securely!)
+   - Select a region close to your users
+   - Click "Create new project" (takes 2-3 minutes)
 
-Example: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/attendance_tracker?retryWrites=true&w=majority`
+3. Set up database schema:
+   - Go to "SQL Editor" in the sidebar
+   - Click "New Query"
+   - Copy the entire contents of `Attendance_Tracker-backend/schema.sql`
+   - Paste into the SQL editor
+   - Click "Run" or press F5
+   - Verify success: You should see "Success. No rows returned" and 8 tables created
+
+4. Get your API credentials:
+   - Go to "Settings" (gear icon) → "API"
+   - Copy these values:
+     - **Project URL**: `https://xxxxx.supabase.co`
+     - **anon public key**: The `anon` key
+     - **service_role key**: Click "Reveal" to see the secret key
+   - ⚠️ Keep the service_role key secure! Never commit it to Git
+
+Example credentials format:
+```
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
 ## Step 2: Deploy Backend to Render
 
@@ -59,10 +74,13 @@ Example: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/attendance_
    - Click "Environment" tab
    - Add these variables:
      ```
-     MONGO_URI=your_mongodb_connection_string_from_step1
+     SUPABASE_URL=your_supabase_project_url_from_step1
+     SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_from_step1
+     SUPABASE_ANON_KEY=your_anon_key_from_step1
      JWT_SECRET=your_super_secret_jwt_key_min_32_chars
      NODE_ENV=production
      FRONTEND_URL=https://your-frontend-url.vercel.app
+     LOG_LEVEL=info
      ```
    - Note: You'll update `FRONTEND_URL` after deploying frontend
 
@@ -132,25 +150,36 @@ vercel
    ```
 3. This will trigger a redeploy (automatic)
 
-## Step 5: Create Initial Admin User
+## Step 5: Verify Default Admin User
 
-Since you're using MongoDB, you need to create an initial user. You can do this by:
+The database schema automatically creates a default superadmin user when you run `schema.sql`:
 
-### Option A: Using MongoDB Compass or Atlas UI
-1. Connect to your MongoDB database
-2. Insert a document in the `users` collection:
-   ```json
-   {
-     "email": "admin@example.com",
-     "password": "$2a$10$HASHED_PASSWORD_HERE",
-     "role": "superadmin",
-     "name": "Admin User",
-     "team": "Management"
-   }
-   ```
+**Default Credentials:**
+- **Email**: `admin@attendance.com`
+- **Password**: `Admin@123`
 
-### Option B: Add a signup endpoint temporarily
-Or you can add a temporary signup route to create your first admin user, then remove it.
+**⚠️ IMPORTANT SECURITY STEPS:**
+
+1. **Login immediately** after deployment:
+   - Visit your Vercel frontend URL
+   - Login with the default credentials
+
+2. **Change the password immediately**:
+   - Go to account/profile settings
+   - Update to a strong, unique password
+   - Save the new credentials securely
+
+3. **Update the default email** (recommended):
+   - Use the User Management interface in the app
+   - Or update directly in Supabase:
+     - Go to Supabase Dashboard → Table Editor
+     - Select `users` table
+     - Find admin user and update email
+
+4. **Verify user exists** in Supabase:
+   - Supabase Dashboard → Table Editor
+   - Select `users` table
+   - Confirm admin user is present with role = 'superadmin'
 
 ## Step 6: Test Your Application
 
@@ -168,12 +197,13 @@ Or you can add a temporary signup route to create your first admin user, then re
 
 1. **500 Error**: Check Render logs
    - Go to Render dashboard → Your service → Logs
-   - Look for MongoDB connection errors
+   - Look for Supabase connection errors
 
-2. **MongoDB Connection Failed**: 
-   - Verify `MONGO_URI` is correct
-   - Check if IP whitelist includes 0.0.0.0/0
-   - Ensure password doesn't have special characters that need encoding
+2. **Supabase Connection Failed**: 
+   - Verify `SUPABASE_URL` is correct (should start with https://)
+   - Check `SUPABASE_SERVICE_ROLE_KEY` is the service_role key, not anon key
+   - Ensure your Supabase project is active (not paused)
+   - Test connection locally first with same credentials
 
 3. **CORS Errors**:
    - Verify `FRONTEND_URL` in Render matches your Vercel URL exactly
@@ -191,15 +221,19 @@ Or you can add a temporary signup route to create your first admin user, then re
    - Ensure all dependencies are in `package.json`
    - Try building locally: `npm run build`
 
-### MongoDB Issues
+### Supabase Issues
 
 1. **Authentication Failed**:
-   - Verify username/password in connection string
-   - Check database user permissions
+   - Verify API keys are correct in environment variables
+   - Check if you're using service_role key for backend (not anon key)
 
-2. **Network Error**:
-   - Verify network access settings (0.0.0.0/0)
-   - Try pinging the cluster URL
+2. **Tables Not Found**:
+   - Verify schema.sql was executed successfully
+   - Check Supabase Table Editor to confirm 8 tables exist
+
+3. **Permission Errors**:
+   - If Row Level Security (RLS) is enabled, configure policies
+   - Service role key bypasses RLS by default
 
 ## Updating Your Application
 
@@ -231,24 +265,26 @@ git push origin master
 - Logs: Render dashboard → Your service → Logs (live tail)
 - Metrics: Render dashboard → Your service → Metrics
 
-### MongoDB Atlas
-- Monitoring: Atlas dashboard → Your cluster → Metrics
-- Logs: Atlas dashboard → Your cluster → Logs
+### Supabase
+- Database Stats: Supabase Dashboard → Home (shows database size, API requests)
+- Logs: Supabase Dashboard → Logs Explorer
+- Performance: Supabase Dashboard → Reports
 
 ## Cost Information
 
 - **Vercel Free Tier**: 100GB bandwidth/month, unlimited projects
 - **Render Free Tier**: Service spins down after 15 min of inactivity, 750 hours/month
-- **MongoDB Atlas Free Tier**: 512MB storage, shared cluster
+- **Supabase Free Tier**: 500MB database, 2GB bandwidth/month, 50,000 monthly active users
 
 ## Security Best Practices
 
 1. Use strong JWT_SECRET (min 32 characters, random)
 2. Enable environment variable encryption on both platforms
 3. Regularly rotate credentials
-4. Use MongoDB Atlas IP whitelist (restrict to known IPs in production)
-5. Enable MongoDB Atlas audit logs
+4. Configure Supabase Row Level Security (RLS) policies for production
+5. Enable Supabase audit logs
 6. Set up monitoring and alerts
+7. Never commit .env files or API keys to Git
 7. Keep dependencies updated
 
 ## Next Steps
@@ -256,13 +292,13 @@ git push origin master
 1. Set up custom domain (optional)
 2. Configure SSL certificates (automatic on Vercel/Render)
 3. Set up monitoring alerts
-4. Configure backup strategy for MongoDB
+4. Configure backup strategy (Supabase has automatic daily backups)
 5. Implement logging service (e.g., Papertrail, Logtail)
-6. Add error tracking (e.g., Sentry)
+6. Add error tracking (built-in with error_logs table)
 
 ## Support Resources
 
 - Vercel Docs: https://vercel.com/docs
 - Render Docs: https://render.com/docs
-- MongoDB Atlas Docs: https://docs.atlas.mongodb.com/
+- Supabase Docs: https://supabase.com/docs
 - GitHub Issues: Create issues in respective repositories

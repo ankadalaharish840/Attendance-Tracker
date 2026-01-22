@@ -1,148 +1,247 @@
+# 📋 Attendance Tracker App
 
-  # Attendance Tracker App
+> A modern, full-stack attendance tracking application with real-time monitoring, error tracking, and comprehensive user management.
 
-A full-stack attendance tracking application with React (TypeScript) frontend and Express + MongoDB backend.
+**Tech Stack**: React + TypeScript + Vite | Node.js + Express | Supabase (PostgreSQL)
 
-## Project Structure
+---
 
-This repository contains the **frontend** code. The backend is in a separate git repository at `Attendance_Tracker-backend/`.
+## 🚀 Quick Start
 
-### Frontend (This Repository)
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS with Radix UI components
-- **Deployment**: Vercel
+**New to this project?** Start here: **[QUICK_SETUP.md](QUICK_SETUP.md)** (15 minutes)
 
-### Backend (Separate Repository)
-- **Framework**: Express.js
-- **Database**: MongoDB with Mongoose
-- **Authentication**: JWT with bcrypt
-- **Deployment**: Render
+### Prerequisites
+- Node.js 16+
+- A Supabase account (free tier works)
 
-## Quick Start
-
-### Frontend Setup
-
-1. Install dependencies:
+### Quick Commands
 ```bash
+# Backend
+cd "Attendance_Tracker-backend"
 npm install
-```
+npm run dev
 
-2. Create `.env.local` file:
-```bash
-cp .env.example .env.local
-```
-
-3. Update `VITE_API_URL` in `.env.local` with your backend URL
-
-4. Run development server:
-```bash
+# Frontend (new terminal)
+npm install
 npm run dev
 ```
 
-5. Build for production:
-```bash
-npm run build
+Visit http://localhost:5173 and login with:
+- Email: `admin@attendance.com`
+- Password: `Admin@123` (change immediately!)
+
+---
+
+## 📚 Documentation
+
+### Essential Guides
+- **[QUICK_SETUP.md](QUICK_SETUP.md)** - 15-minute setup guide ⭐ START HERE
+- **[MIGRATION_AND_ERROR_TRACKING_README.md](MIGRATION_AND_ERROR_TRACKING_README.md)** - Complete feature guide
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
+- **[docs/INDEX.md](docs/INDEX.md)** - Complete documentation index
+
+### Organized Documentation
+```
+docs/
+├── frontend/          # Frontend-specific documentation
+│   ├── API_REFERENCE.md
+│   ├── FRONTEND_README.md
+│   ├── TESTING_CHECKLIST.md
+│   └── TESTING_GUIDE.md
+├── backend/           # Backend-specific documentation
+│   ├── SUPABASE_MIGRATION_GUIDE.md
+│   ├── BACKEND_IMPLEMENTATION_REPORT.md
+│   └── CODE_VALIDATION_REPORT.md
+└── ...                # General documentation
+    ├── DEPLOYMENT_GUIDE.md
+    ├── SECURITY.md
+    └── QUICK_REFERENCE.md
 ```
 
-### Backend Setup
+---
 
-Navigate to the backend directory:
-```bash
-cd Attendance_Tracker-backend
-```
+## ✨ Features
 
-Follow the instructions in `Attendance_Tracker-backend/README.md`
+### Core Functionality
+- ✅ **Time Tracking**: Clock in/out with precise timestamps
+- ✅ **Break Management**: Track breaks with reasons
+- ✅ **Leave Requests**: Submit and manage leave requests
+- ✅ **Time Change Requests**: Request modifications to logged times
+- ✅ **Attendance Calendar**: View historical attendance data
 
-## Deployment
+### User Management
+- ✅ **Multi-role System**: Super Admin, Admin, Agent roles
+- ✅ **User Assignment**: Admins manage assigned agents
+- ✅ **Impersonation**: Super admins can view as other users
+- ✅ **Team Management**: Organize users by teams
 
-### Frontend Deployment (Vercel)
+### Error Tracking & Debugging
+- ✅ **Frontend Error Tracking**: Automatic error capture with ErrorBoundary
+- ✅ **Backend Error Logging**: Winston logger + database logging
+- ✅ **Error Download**: Export error logs for debugging
+- ✅ **Health Monitoring**: Real-time system health checks
 
-1. Push your code to GitHub
-2. Import the repository in Vercel
-3. Vercel will auto-detect Vite configuration
-4. Add environment variable: `VITE_API_URL` (your Render backend URL)
-5. Deploy!
+### Security
+- ✅ **JWT Authentication**: Secure token-based auth
+- ✅ **Role-based Access Control**: Granular permissions
+- ✅ **Input Validation**: Comprehensive validation
+- ✅ **CORS Protection**: Restricted origins
+- ✅ **Security Headers**: Helmet.js integration
 
-Alternatively, use Vercel CLI:
-```bash
-npm i -g vercel
-vercel
-```
+---
 
-### Backend Deployment (Render)
-
-1. Create a new Web Service on Render
-2. Connect the backend GitHub repository
-3. Set:
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-4. Add environment variables:
-   - `MONGO_URI`: Your MongoDB connection string
-   - `JWT_SECRET`: Your JWT secret key
-   - `FRONTEND_URL`: Your Vercel frontend URL
-   - `NODE_ENV`: production
-5. Deploy!
-
-## Environment Variables
-
-### Frontend (.env.local)
-- `VITE_API_URL`: Backend API URL (e.g., https://your-app.onrender.com/api)
-
-### Backend (.env)
-- `PORT`: Server port (default: 5000)
-- `MONGO_URI`: MongoDB connection string
-- `JWT_SECRET`: Secret key for JWT tokens
-- `FRONTEND_URL`: Frontend URL for CORS
-- `NODE_ENV`: Environment (development/production)
-
-## Features
-
-- User authentication (login/register)
-- Role-based access control (SuperAdmin, Admin, Agent)
-- Time tracking
-- Attendance calendar
-- Leave requests
-- Live dashboard
-- User management
-- Settings panel
-
-## Tech Stack
+## 🏗️ Architecture
 
 ### Frontend
-- React 18
-- TypeScript
-- Vite
-- Tailwind CSS
-- Radix UI
-- Material-UI
-- Date-fns
-- Lucide Icons
+```
+src/
+├── app/
+│   ├── App.tsx                      # Main app component with ErrorBoundary
+│   └── components/                  # React components
+│       ├── ErrorBoundary.tsx        # Error boundary component
+│       ├── LoginPage.tsx
+│       ├── SuperAdminDashboard.tsx
+│       ├── AdminDashboard.tsx
+│       └── AgentDashboard.tsx
+├── utils/
+│   ├── api.ts                       # API client with error tracking
+│   └── errorTracker.ts              # Frontend error tracking utility
+└── styles/                          # Stylesheets
+```
 
 ### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT (jsonwebtoken)
-- bcrypt.js
-- CORS
-- Helmet
+```
+Attendance_Tracker-backend/
+├── config/
+│   └── supabase.js                  # Supabase configuration
+├── middleware/
+│   ├── auth.js                      # Authentication middleware
+│   └── errorTracking.js             # Error tracking middleware
+├── routes/
+│   ├── auth.js                      # Authentication routes
+│   └── attendance.js                # Attendance & user routes
+├── utils/
+│   └── supabaseHelpers.js           # Database helper functions
+├── logs/                            # Error and application logs
+├── schema.sql                       # Database schema
+└── server.js                        # Express server
+```
 
-## Git Repositories
+---
 
-- **Frontend**: Current repository (for Vercel deployment)
-- **Backend**: `Attendance_Tracker-backend/` (separate git repo for Render deployment)
+## 🗄️ Database Schema
 
-## Support
+### Tables (Supabase PostgreSQL)
+- `users` - User accounts with roles
+- `attendance` - Clock in/out records
+- `breaks` - Break tracking
+- `time_change_requests` - Time modification requests
+- `leave_requests` - Leave applications
+- `settings` - Application settings
+- `error_logs` - Error tracking (NEW!)
+- `health_checks` - System monitoring (NEW!)
 
-For issues or questions, please create an issue in the respective repository.
+**Schema Setup**: Run `Attendance_Tracker-backend/schema.sql` in Supabase SQL Editor
 
-  This is a code bundle for Attendance Tracker App. The original project is available at https://www.figma.com/design/U2PLYHyoqcIaCAORbql71Y/Attendance-Tracker-App.
+---
 
-  ## Running the code
+## 🔧 Configuration
 
-  Run `npm i` to install the dependencies.
+### Backend Environment Variables
+Create `Attendance_Tracker-backend/.env`:
+```env
+PORT=5000
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_ANON_KEY=your-anon-key
+JWT_SECRET=your-jwt-secret
+FRONTEND_URL=http://localhost:5173
+NODE_ENV=development
+LOG_LEVEL=info
+```
 
-  Run `npm run dev` to start the development server.
-  
+### Frontend Environment Variables
+Create `.env.local` (optional):
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+---
+
+## 🧪 Testing
+
+### View Error Logs
+```sql
+-- In Supabase SQL Editor
+SELECT * FROM error_logs 
+ORDER BY created_at DESC 
+LIMIT 20;
+```
+
+### Backend Logs
+```bash
+# Error logs
+tail -f Attendance_Tracker-backend/logs/error.log
+
+# All logs
+tail -f Attendance_Tracker-backend/logs/combined.log
+```
+
+### Frontend Error Logs
+```javascript
+// In browser console
+JSON.parse(localStorage.getItem('app_error_logs'))
+```
+
+---
+
+## 📦 What's New in Latest Version
+
+### Migration to Supabase
+- ✅ Migrated from MongoDB to Supabase (PostgreSQL)
+- ✅ Improved performance and scalability
+- ✅ Better data relationships and queries
+- ✅ Automatic backups and point-in-time recovery
+
+### Error Tracking System
+- ✅ Frontend error boundary with graceful error handling
+- ✅ Backend Winston logger with file rotation
+- ✅ Database error logging for persistent tracking
+- ✅ Error download functionality
+- ✅ Health check monitoring
+
+---
+
+## 🤝 Contributing
+
+1. Frontend changes: See [docs/frontend/FRONTEND_README.md](docs/frontend/FRONTEND_README.md)
+2. Backend changes: See [docs/backend/SUPABASE_MIGRATION_GUIDE.md](docs/backend/SUPABASE_MIGRATION_GUIDE.md)
+3. Testing: See [docs/frontend/TESTING_GUIDE.md](docs/frontend/TESTING_GUIDE.md)
+
+---
+
+## 📞 Support
+
+- **Setup Issues**: Check [QUICK_SETUP.md](QUICK_SETUP.md)
+- **Error Tracking**: Check `error_logs` table in Supabase
+- **Full Documentation**: See [docs/INDEX.md](docs/INDEX.md)
+
+---
+
+## 📄 License
+
+See LICENSE file for details.
+
+---
+
+## 🎯 Project Status
+
+✅ **Production Ready**
+- Supabase migration complete
+- Error tracking implemented
+- Security hardened
+- Comprehensive documentation
+
+---
+
+**Made with ❤️ using React, Node.js, and Supabase**

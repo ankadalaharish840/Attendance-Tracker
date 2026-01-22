@@ -1,4 +1,6 @@
 // API configuration with security enhancements
+import { trackApiError } from './errorTracker';
+
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Token storage keys
@@ -93,11 +95,9 @@ export const api = {
 
       return data;
     } catch (err) {
+      trackApiError(err, '/auth/register');
       throw new Error(handleApiError(err));
     }
-  },
-
-  // Get current user profile
   getProfile: async () => {
     try {
       const response = await api.authenticatedFetch('/auth/me');
@@ -121,6 +121,7 @@ export const api = {
       return response;
     } catch (err) {
       // If refresh fails, logout user
+      trackApiError(err, '/auth/refresh');
       api.logout();
       throw new Error(handleApiError(err));
     }
@@ -142,6 +143,7 @@ export const api = {
       
       return response.json();
     } catch (err) {
+      trackApiError(err, '/health');
       throw new Error('Backend is not available');
     }
   },

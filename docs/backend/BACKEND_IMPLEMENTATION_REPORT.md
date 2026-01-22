@@ -357,7 +357,7 @@
    ```
 
 2. **Verify Environment Variables:**
-   - Ensure `.env` has `MONGO_URI` and `JWT_SECRET`
+   - Ensure `.env` has Supabase credentials (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`) and `JWT_SECRET`
 
 3. **Test API Endpoints:**
    - Use the frontend or Postman to test all endpoints
@@ -374,7 +374,7 @@
    - Verify live dashboards
 
 5. **Data Verification:**
-   - Check MongoDB collections are created
+   - Check Supabase tables are created (8 tables via schema.sql)
    - Verify attendance records
    - Check break tracking
    - Validate request workflows
@@ -385,18 +385,20 @@
 
 ### Database Collections:
 1. **users** - User accounts with roles
-2. **attendances** - Login/logout records with device info
+2. **attendance** - Login/logout records with device info
 3. **breaks** - Break records with types and durations
-4. **timechangerequests** - Time change requests with status
-5. **leaverequests** - Leave requests with approval status
-6. **settings** - System-wide settings (singleton)
+4. **time_change_requests** - Time change requests with status
+5. **leave_requests** - Leave requests with approval status
+6. **settings** - System-wide settings
+7. **error_logs** - Error tracking logs
+8. **health_checks** - System health monitoring
 
 ### Security Features:
 - ✅ JWT authentication
 - ✅ Role-based authorization
 - ✅ Password hashing with bcrypt
 - ✅ Input validation
-- ✅ SQL injection protection (MongoDB)
+- ✅ SQL injection protection (PostgreSQL prepared statements)
 - ✅ CORS configuration
 - ✅ Helmet for HTTP headers
 - ✅ Request size limits
