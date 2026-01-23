@@ -1,6 +1,6 @@
 // Error Boundary Component for React
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { errorTracker, trackComponentError } from '../utils/errorTracker';
+import { errorTracker, trackComponentError } from '../../utils/errorTracker';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Button } from './ui/button';
 

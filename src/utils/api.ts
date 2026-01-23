@@ -98,6 +98,8 @@ export const api = {
       trackApiError(err, '/auth/register');
       throw new Error(handleApiError(err));
     }
+  },
+
   getProfile: async () => {
     try {
       const response = await api.authenticatedFetch('/auth/me');

@@ -99,61 +99,362 @@ Backend models (replaced by Supabase):
 
 ---
 
-## 🔧 Configuration Required
+## 🔧 Supabase Setup - Step by Step Instructions
 
-### ⚠️ CRITICAL: Before Running the App
+### ⚠️ CRITICAL: Complete These Steps Before Deployment
 
-1. **Create Supabase Project**
+---
+
+### Step 1: Create Supabase Account & Project
+
+1. **Sign Up for Supabase**
    - Go to https://supabase.com
-   - Create a new project
-   - Wait for project to be ready (~2 minutes)
+   - Click "Start your project" or "Sign In"
+   - Sign up with GitHub, Google, or email
+   - Verify your email if required
 
-2. **Run Database Schema**
-   - Open Supabase SQL Editor
-   - Copy entire content from `Attendance_Tracker-backend/schema.sql`
-   - Execute the SQL script
-   - Verify 8 tables created successfully
+2. **Create New Organization** (if first time)
+   - Click "New organization"
+   - Enter organization name (e.g., "My Company")
+   - Select free plan (or paid if needed)
+   - Click "Create organization"
 
-3. **Update .env File**
+3. **Create New Project**
+   - Click "New project"
+   - Fill in project details:
+     - **Name**: `attendance-tracker` (or your preferred name)
+     - **Database Password**: Create a strong password (SAVE THIS!)
+     - **Region**: Choose closest to your users
+     - **Pricing Plan**: Free (or select paid plan)
+   - Click "Create new project"
+   - **Wait 2-3 minutes** for project initialization
+
+---
+
+### Step 2: Get API Credentials
+
+1. **Navigate to Project Settings**
+   - In your project dashboard, click the **Settings** icon (⚙️) in the left sidebar
+   - Click **API** under Project Settings
+
+2. **Copy Your Credentials**
+   You'll need three values:
+   
+   **a) Project URL**
+   - Under "Project URL" section
+   - Format: `https://xxxxxxxxxxxxx.supabase.co`
+   - Copy this entire URL
+   
+   **b) Anon/Public Key**
+   - Under "Project API keys" section
+   - Look for `anon` `public` key
+   - Click the copy icon
+   - This is safe to use in frontend
+   
+   **c) Service Role Key** ⚠️ KEEP SECRET
+   - Under "Project API keys" section
+   - Look for `service_role` `secret` key
+   - Click "Reveal" then copy
+   - **NEVER commit this to Git or expose publicly**
+
+3. **Save These Credentials**
+   - Open a text file temporarily
+   - Paste all three values
+   - Label them clearly:
+     ```
+     SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+     SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+     SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+     ```
+
+---
+
+### Step 3: Create Database Schema
+
+1. **Open SQL Editor**
+   - In Supabase dashboard, click **SQL Editor** in left sidebar
+   - Click **"New query"** button
+
+2. **Copy Schema File Content**
+   - In VS Code, open `Attendance_Tracker-backend/schema.sql`
+   - Select all content (Ctrl+A or Cmd+A)
+   - Copy (Ctrl+C or Cmd+C)
+
+3. **Paste and Execute**
+   - Go back to Supabase SQL Editor
+   - Paste the entire schema (Ctrl+V or Cmd+V)
+   - Click **"Run"** button (or press F5)
+   - **Wait for execution** (should take 2-5 seconds)
+
+4. **Verify Success**
+   - You should see "Success. No rows returned" message
+   - Click **"Table Editor"** in left sidebar
+   - You should see 8 tables created:
+     ✅ users
+     ✅ attendance
+     ✅ breaks
+     ✅ time_change_requests
+     ✅ leave_requests
+     ✅ settings
+     ✅ error_logs
+     ✅ health_checks
+
+5. **Verify Default Data**
+   - Click on **users** table
+   - You should see 1 default superadmin user:
+     - Email: `admin@attendance.com`
+     - Password: `Admin@123` (hashed in database)
+   - Click on **settings** table
+   - You should see 1 default settings row
+
+---
+
+### Step 4: Configure Backend Environment Variables
+
+#### For Local Development:
+
+1. **Open Backend .env File**
+   - Navigate to `Attendance_Tracker-backend/.env`
+   - If file doesn't exist, create it
+
+2. **Update .env with Your Credentials**
    ```env
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-   SUPABASE_ANON_KEY=your-anon-key
-   ```
-   Get these values from: Supabase Dashboard → Settings → API
+   # Supabase Configuration
+   SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-4. **Install Dependencies** (Already done)
+   # Server Configuration
+   PORT=5000
+   NODE_ENV=development
+   JWT_SECRET=your-jwt-secret-key-change-in-production
+
+   # Frontend URL (for CORS)
+   CLIENT_URL=http://localhost:5173
+   ```
+
+3. **Replace placeholders** with your actual Supabase credentials from Step 2
+
+#### For Vercel Deployment:
+
+1. **Go to Vercel Dashboard**
+   - Navigate to your project
+   - Click **Settings** tab
+   - Click **Environment Variables** in left sidebar
+
+2. **Add Environment Variables** (one by one)
+   
+   Click "Add New" for each:
+   
+   | Key | Value | Environment |
+   |-----|-------|-------------|
+   | `SUPABASE_URL` | Your Supabase URL | Production, Preview, Development |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Your service role key | Production, Preview, Development |
+   | `SUPABASE_ANON_KEY` | Your anon key | Production, Preview, Development |
+   | `JWT_SECRET` | Your JWT secret | Production, Preview, Development |
+   | `NODE_ENV` | `production` | Production |
+   | `CLIENT_URL` | Your Vercel frontend URL | Production |
+
+3. **Click Save**
+
+#### For Render Deployment:
+
+1. **Go to Render Dashboard**
+   - Navigate to your backend service
+   - Click **Environment** tab
+
+2. **Add Environment Variables**
+   - Click "Add Environment Variable"
+   - Add each variable:
+     ```
+     SUPABASE_URL = https://xxxxxxxxxxxxx.supabase.co
+     SUPABASE_SERVICE_ROLE_KEY = eyJhbGci...
+     SUPABASE_ANON_KEY = eyJhbGci...
+     JWT_SECRET = your-jwt-secret
+     NODE_ENV = production
+     CLIENT_URL = your-frontend-url
+     ```
+
+3. **Click Save Changes**
+
+---
+
+### Step 5: Install Dependencies
+
+1. **Install Backend Dependencies**
    ```bash
-   cd "Attendance Tracker App/Attendance_Tracker-backend"
+   cd "d:\Projects\Attendance Tracker App\Attendance_Tracker-backend"
+   npm install
+   ```
+
+2. **Install Frontend Dependencies**
+   ```bash
+   cd "d:\Projects\Attendance Tracker App"
    npm install
    ```
 
 ---
 
-## 🚀 How to Run
+### Step 6: Test Local Setup
 
-### Start Backend
+1. **Start Backend Server**
+   ```bash
+   cd "d:\Projects\Attendance Tracker App\Attendance_Tracker-backend"
+   npm run dev
+   ```
+   
+   **Expected Output:**
+   ```
+   Supabase connected successfully
+   Server running on port 5000 in development mode
+   ```
+
+2. **Test Health Check**
+   - Open browser: http://localhost:5000/api/health
+   - Should see: `{"status":"ok","database":"connected"}`
+
+3. **Start Frontend**
+   ```bash
+   cd "d:\Projects\Attendance Tracker App"
+   npm run dev
+   ```
+   
+   **Expected Output:**
+   ```
+   VITE v6.3.5  ready in XXX ms
+   ➜  Local:   http://localhost:5173/
+   ```
+
+4. **Test Login**
+   - Open: http://localhost:5173
+   - Login with:
+     - **Email**: `admin@attendance.com`
+     - **Password**: `Admin@123`
+   - Should successfully login to Super Admin dashboard
+
+---
+
+### Step 7: Deploy to Production
+
+#### Deploy Frontend to Vercel:
+
+1. **Push Code to GitHub**
+   ```bash
+   cd "d:\Projects\Attendance Tracker App"
+   git add .
+   git commit -m "Fixed JSX syntax error and configured Supabase"
+   git push origin main
+   ```
+
+2. **Connect to Vercel**
+   - Go to https://vercel.com
+   - Click "Add New" → "Project"
+   - Import your GitHub repository
+   - Select your Attendance Tracker repository
+
+3. **Configure Build Settings**
+   - **Framework Preset**: Vite
+   - **Root Directory**: `./` (leave as root)
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+
+4. **Add Environment Variables** (see Step 4 above)
+
+5. **Deploy**
+   - Click "Deploy"
+   - Wait for build to complete
+   - Copy your production URL
+
+#### Deploy Backend to Render:
+
+1. **Create Web Service**
+   - Go to https://render.com
+   - Click "New" → "Web Service"
+   - Connect your GitHub repository
+   - Select your repository
+
+2. **Configure Service**
+   - **Name**: `attendance-tracker-backend`
+   - **Root Directory**: `Attendance_Tracker-backend`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start` or `node server.js`
+   - **Instance Type**: Free (or paid)
+
+3. **Add Environment Variables** (see Step 4 above)
+
+4. **Create Web Service**
+   - Click "Create Web Service"
+   - Wait for deployment
+   - Copy your backend URL
+
+5. **Update Frontend API URL**
+   - In frontend code, update API base URL to your Render backend URL
+   - Redeploy frontend to Vercel
+
+---
+
+### Step 8: Post-Deployment Verification
+
+1. **Test Production Backend**
+   - Open: `https://your-backend-url.onrender.com/api/health`
+   - Should return: `{"status":"ok","database":"connected"}`
+
+2. **Test Production Frontend**
+   - Open: `https://your-app.vercel.app`
+   - Login with default credentials
+   - Verify all features work
+
+3. **Change Default Password** ⚠️ IMPORTANT
+   - Login as superadmin
+   - Go to Settings
+   - Change password from `Admin@123` to a secure password
+
+4. **Monitor Errors**
+   - Check Supabase logs: Dashboard → Logs
+   - Check `error_logs` table for any issues
+   - Monitor Vercel logs for frontend issues
+   - Monitor Render logs for backend issues
+
+---
+
+## 🚀 Quick Start Commands Summary
+
+### Local Development:
 ```bash
+# Backend
 cd "d:\Projects\Attendance Tracker App\Attendance_Tracker-backend"
+npm install
 npm run dev
-```
 
-Expected output:
-```
-Supabase connected successfully
-Server running on port 5000 in development mode
-```
-
-### Start Frontend
-```bash
+# Frontend (in new terminal)
 cd "d:\Projects\Attendance Tracker App"
+npm install
 npm run dev
 ```
 
-### Test Login
-- **URL**: http://localhost:5173
+### Production Build Test:
+```bash
+# Test production build locally
+cd "d:\Projects\Attendance Tracker App"
+npm run build
+npm run preview
+```
+
+---
+
+## 🔧 Configuration Required
+
+
+### Default Login Credentials
+
+After completing all setup steps, use these credentials to login:
+
+- **URL**: http://localhost:5173 (local) or your Vercel URL (production)
 - **Email**: admin@attendance.com
 - **Password**: Admin@123
+
+⚠️ **IMPORTANT**: Change this password immediately after first login in production!
 
 ---
 
@@ -335,6 +636,154 @@ Before considering migration complete:
 6. **Performance Monitoring**: Add performance tracking
 7. **Analytics**: Add error analytics dashboard
 8. **Deploy**: Deploy to production (Vercel/Netlify + Supabase)
+
+---
+
+---
+
+## 🐛 Troubleshooting Common Issues
+
+### Build Errors in Vercel/Render
+
+#### Error: "The character '>' is not valid inside a JSX element"
+**Cause**: Malformed JSX closing tags in React components
+**Solution**: 
+- Check for corrupted closing tags like `ErrorBoundaryiv>` instead of `</ErrorBoundary>`
+- Ensure all JSX elements are properly closed
+- Run `npm run build` locally first to catch syntax errors
+
+#### Error: "Transform failed with X errors"
+**Cause**: TypeScript/JSX syntax errors
+**Solution**:
+1. Run build locally: `npm run build`
+2. Fix all errors shown
+3. Test with `npm run preview`
+4. Commit and push fixes
+
+#### Error: "Cannot find module '@supabase/supabase-js'"
+**Cause**: Dependencies not installed or package.json missing
+**Solution**:
+- Verify `package.json` includes `@supabase/supabase-js`
+- Check `node_modules` is in `.gitignore`
+- Ensure Vercel/Render runs `npm install` during build
+
+### Database Connection Errors
+
+#### Error: "Supabase connection failed"
+**Cause**: Missing or incorrect environment variables
+**Solution**:
+1. Verify environment variables in Vercel/Render dashboard
+2. Check no extra spaces or quotes in values
+3. Ensure `SUPABASE_URL` starts with `https://`
+4. Verify Service Role Key is correct (not Anon Key)
+
+#### Error: "relation 'users' does not exist"
+**Cause**: Database schema not created
+**Solution**:
+1. Go to Supabase SQL Editor
+2. Re-run `schema.sql` file
+3. Verify tables exist in Table Editor
+4. Check Supabase logs for schema errors
+
+### CORS Errors
+
+#### Error: "CORS policy: No 'Access-Control-Allow-Origin' header"
+**Cause**: Backend not allowing frontend domain
+**Solution**:
+1. Update backend `.env`: `CLIENT_URL=https://your-vercel-app.vercel.app`
+2. Check `server.js` CORS configuration
+3. Redeploy backend
+4. Clear browser cache
+
+### Authentication Errors
+
+#### Error: "Invalid token" or "jwt malformed"
+**Cause**: JWT_SECRET mismatch or not set
+**Solution**:
+1. Verify `JWT_SECRET` is same in all environments
+2. Set strong `JWT_SECRET` in production
+3. Clear browser localStorage: `localStorage.clear()`
+4. Try login again
+
+### Environment-Specific Issues
+
+#### Local Works, Production Fails
+**Checklist**:
+- [ ] All environment variables set in Vercel/Render
+- [ ] `NODE_ENV=production` is set
+- [ ] Database schema is created in Supabase
+- [ ] Backend URL is correct in frontend
+- [ ] HTTPS is used (not HTTP)
+
+#### Build Succeeds, Runtime Fails
+**Check**:
+1. Browser console for errors (F12)
+2. Network tab for failed API calls
+3. Vercel Function Logs
+4. Render Service Logs
+5. Supabase Logs → API tab
+
+---
+
+## 📊 Verification Checklist
+
+Use this checklist to ensure everything is working:
+
+### Database Setup
+- [ ] Supabase project created
+- [ ] 8 tables exist (users, attendance, breaks, etc.)
+- [ ] Default superadmin user exists
+- [ ] Default settings row exists
+- [ ] Can query tables in Supabase SQL Editor
+
+### Environment Configuration
+- [ ] `.env` file created in backend folder
+- [ ] `SUPABASE_URL` is set correctly
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` is set (not Anon Key)
+- [ ] `SUPABASE_ANON_KEY` is set
+- [ ] `JWT_SECRET` is set
+- [ ] All keys have no extra spaces or quotes
+
+### Local Development
+- [ ] Backend starts: `npm run dev` in backend folder
+- [ ] Frontend starts: `npm run dev` in root folder
+- [ ] Health check works: http://localhost:5000/api/health
+- [ ] Can login with default credentials
+- [ ] Can see dashboard after login
+- [ ] No console errors in browser
+
+### Production Build
+- [ ] `npm run build` succeeds locally
+- [ ] No TypeScript errors
+- [ ] No ESLint errors
+- [ ] `npm run preview` shows app correctly
+
+### Vercel Deployment (Frontend)
+- [ ] GitHub repository connected
+- [ ] Build command: `npm run build`
+- [ ] Output directory: `dist`
+- [ ] All environment variables added
+- [ ] Build succeeds on Vercel
+- [ ] Deployment URL opens app
+- [ ] Can login on production URL
+
+### Render Deployment (Backend)
+- [ ] Repository connected
+- [ ] Root directory: `Attendance_Tracker-backend`
+- [ ] Start command: `node server.js` or `npm start`
+- [ ] All environment variables added
+- [ ] Service is live (green status)
+- [ ] Health endpoint accessible
+- [ ] Logs show "Supabase connected"
+
+### End-to-End Testing
+- [ ] Frontend loads without errors
+- [ ] Can login successfully
+- [ ] Dashboard displays correctly
+- [ ] Can create attendance record
+- [ ] Can view reports
+- [ ] Error tracking works (test by causing error)
+- [ ] Logout works
 
 ---
 

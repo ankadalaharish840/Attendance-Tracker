@@ -90,46 +90,47 @@ export default function App() {
       <div className="size-full bg-slate-50">
         {/* Impersonation Banner */}
         {user.isImpersonating && (
-        <div className="bg-yellow-500 text-white px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">
-              You are viewing as: {user.name} ({user.role})
-            </span>
+          <div className="bg-yellow-500 text-white px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">
+                You are viewing as: {user.name} ({user.role})
+              </span>
+            </div>
+            <button
+              onClick={handleExitImpersonation}
+              className="flex items-center gap-2 px-4 py-2 bg-white text-yellow-700 rounded-lg hover:bg-yellow-50 transition font-semibold"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Exit & Return to Super Admin
+            </button>
           </div>
-          <button
-            onClick={handleExitImpersonation}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-yellow-700 rounded-lg hover:bg-yellow-50 transition font-semibold"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Exit & Return to Super Admin
-          </button>
-        </div>
-      )}
+        )}
 
-      <div className={`${user.isImpersonating ? 'h-[calc(100%-56px)]' : 'size-full'}`}>
-        {user.role === "superadmin" && (
-          <SuperAdminDashboard
-            user={user}
-            sessionId={sessionId}
-            onLogout={handleLogout}
-            onImpersonate={handleImpersonate}
-          />
-        )}
-        {user.role === "admin" && (
-          <AdminDashboard
-            user={user}
-            sessionId={sessionId}
-            onLogout={handleLogout}
-          />
-        )}
-        {user.role === "agent" && (
-          <AgentDashboard
-            user={user}
-            sessionId={sessionId}
-            onLogout={handleLogout}
-          />
-        )}
-      ErrorBoundaryiv>
-    </div>
+        <div className={`${user.isImpersonating ? 'h-[calc(100%-56px)]' : 'size-full'}`}>
+          {user.role === "superadmin" && (
+            <SuperAdminDashboard
+              user={user}
+              sessionId={sessionId}
+              onLogout={handleLogout}
+              onImpersonate={handleImpersonate}
+            />
+          )}
+          {user.role === "admin" && (
+            <AdminDashboard
+              user={user}
+              sessionId={sessionId}
+              onLogout={handleLogout}
+            />
+          )}
+          {user.role === "agent" && (
+            <AgentDashboard
+              user={user}
+              sessionId={sessionId}
+              onLogout={handleLogout}
+            />
+          )}
+        </div>
+      </div>
+    </ErrorBoundary>
   );
 }
