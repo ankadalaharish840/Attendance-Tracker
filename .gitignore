@@ -1,17 +1,35 @@
+# Dependencies
 node_modules
+node_modules/
+
+# Environment & Secrets
 .env
 .env.local
 .env.production
-.DS_Store
+.env.development
+.env.*
+!.env.example
+secrets/
+credentials/
+
+# Build
 dist
 dist-ssr
 *.local
+
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
 .idea
 .vscode
 *.swp
@@ -20,4 +38,5 @@ lerna-debug.log*
 # Vercel
 .vercel
 
+# Backend (separate repo or local only)
 Attendance_Tracker-backend/
